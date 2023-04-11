@@ -1,0 +1,64 @@
+{% extends 'front.html.twig' %}
+
+{% block body %}
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      {% for parapharmacie in parapharmacies %}
+        <div class="col-md-4 my-3">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title">{{ parapharmacie.nom }}</h5>
+            </div>
+            <div class="card-body">
+              <p class="card-text">{{ parapharmacie.adresse }}</p>
+              <p class="card-text">{{ parapharmacie.phone }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    .card {
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: box-shadow 0.3s ease-in-out;
+      margin-top:70px;
+    }
+    
+    .card:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+    
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 0;
+    }
+    
+    .card-text {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .btn-primary {
+      background-color: #1977CC;
+      border-color: #1977CC;
+      border-radius: 20px;
+      padding: 0.5rem 1.5rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+      transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+    }
+    
+    .btn-primary:hover {
+      background-color: #0D3E5F;
+      border-color: #0D3E5F;
+    }
+  </style>
+{% endblock %}

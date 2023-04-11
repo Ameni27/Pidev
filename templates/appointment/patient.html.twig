@@ -1,0 +1,34 @@
+{% extends 'front.html.twig' %}
+
+{% block title %}Vos rendez-vous{% endblock %}
+
+{% block body %}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-YnznVtMWhG2l5O5I3qC1hTpjOatDGfkhBZ+/XcZttvp8MIvzBjH+LTaUfme6zWd+v0J+tF0M7VYXpz6zg8WOvQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+  <div class="container" style="margin-top: 170px;">
+    <div class="row">
+      {% for appointment in appointments %}
+        <div class="col-md-6">
+          <div class="card border-0 rounded-3 shadow-sm mb-4">
+            <div class="card-header bg-light">
+              <h5 class="card-title">{{ appointment.dateap|date('d/m/Y') }} - {{ appointment.hour|date('H:i') }}</h5>
+            </div>
+            <div class="card-body">
+              <p class="card-text"><strong>Médecin :</strong> {{ appointment.medecinName }}</p>
+              <p class="card-text"><strong>Spécialité :</strong> </p>
+              <div class="btn-group" role="group">
+                <a href="{{ path('appointments_edit', {'id': appointment.idap}) }}" class="btn btn-info mx-2" title="Modifier">edit
+                  <i class="bi bi-pencil"></i>
+                </a>
+                <a href="{{ path('appointments_delete', {'id': appointment.idap}) }}" class="btn btn-danger" title="Supprimer">delete
+                  <i class="bi bi-trash"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}
