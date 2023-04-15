@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ParapharmacieRepository;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping as ORM ;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ParapharmacieRepository::class)]
