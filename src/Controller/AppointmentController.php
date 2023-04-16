@@ -11,6 +11,9 @@ use App\Entity\User;
 use App\Form\AppointmentType; // Ajout de cette ligne
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\AppointmentRepository;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+
 class AppointmentController extends AbstractController
 {
     #[Route('/Appointment', name: 'app_appointment')]
@@ -101,6 +104,16 @@ public function edit(Request $request, Appointment $appointment, EntityManagerIn
 
         return $this->redirectToRoute('app_appointment');
     }
+
+    #[Route('/appointments/{id}/confirm', name: 'appointments_confirm')]
+    public function confirm(Request $request, Appointment $appointment, EntityManagerInterface $entityManager): Response
+    {
+        $appointment->setStatus(true);
+        $entityManager->flush();
+    
+          return $this->redirectToRoute('app_appointment');
+    }
+
 
 
     

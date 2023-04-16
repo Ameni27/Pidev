@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
@@ -24,6 +25,7 @@ class User
 
     #[ORM\Column(type: 'string', length: 50)]
     private string $role;
+    
 
     public function getIduser(): ?int
     {
