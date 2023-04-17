@@ -13,6 +13,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\AppointmentRepository;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TimeType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use App\Form\AppointmentSearchType; // Ajout de cette ligne
+
 
 class AppointmentController extends AbstractController
 {
@@ -114,8 +120,33 @@ public function edit(Request $request, Appointment $appointment, EntityManagerIn
           return $this->redirectToRoute('app_appointment');
     }
 
+    
+    #[Route('/Appointments/search', name: 'appointments_search')]
+    public function search(Request $request, AppointmentRepository $repository): Response
+    {
+        // Créer un formulaire de recherche de rendez-vous
+        $form = $this->createForm(AppointmentSearchType::class);
 
+        // Traitement de la soumission de formulaire
+        $form->handleRequest($request);
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Récupérer les données du formulaire
+            $formData = $form->getData();
+
+            // Rechercher les rendez-vous correspondant aux critères de recherche
+            $appointments = $repository->findBySearchCriteria($formData);
+        } else {
+            // Si le formulaire n'a pas été soumis ou s'il n'est pas valide,
+            // initialiser la variable $appointments à une tableau vide
+            $appointments = [];
+        }
+
+        return $this->render('appointment/search.html.twig', [
+            'form' => $form->createView(),
+            'appointments' => $appointments,
+        ]);
+    }
     
     
 }

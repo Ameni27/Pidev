@@ -39,6 +39,32 @@ class AppointmentRepository extends ServiceEntityRepository
         }
     }
 
+    // App\Repository\AppointmentRepository.php
+
+    public function findBySearchCriteria(array $criteria): array
+    {
+        $qb = $this->createQueryBuilder('a');
+
+        if (isset($criteria['patientName'])) {
+            $qb->andWhere('a.patientName LIKE :patientName')
+                ->setParameter('patientName', '%' . $criteria['patientName'] . '%');
+        }
+
+        if (isset($criteria['appointmentDate'])) {
+            $qb->andWhere('a.dateap = :appointmentDate')
+                ->setParameter('appointmentDate', $criteria['appointmentDate']);
+        }
+
+        if (isset($criteria['appointmentTime'])) {
+            $qb->andWhere('a.hour = :appointmentTime')
+                ->setParameter('appointmentTime', $criteria['appointmentTime']);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+
+
 //    /**
 //     * @return Appointment[] Returns an array of Appointment objects
 //     */

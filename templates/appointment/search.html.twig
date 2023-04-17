@@ -1,0 +1,33 @@
+{% extends 'back.html.twig' %}
+
+{% block body %}
+    <h1>Recherche de rendez-vous</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.patientName) }}
+        {{ form_row(form.appointmentDate) }}
+        {{ form_row(form.appointmentTime) }}
+        {{ form_row(form.search) }}
+    {{ form_end(form) }}
+
+    {% if appointments is not empty %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom du patient</th>
+                    <th>Date du rendez-vous</th>
+                    <th>Heure du rendez-vous</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                    <tr>
+                        <td>{{ appointment.getPatientName() }}</td>
+                        <td>{{ appointment.getDateap()|date('d/m/Y') }}</td>
+                        <td>{{ appointment.getHour()|date('H:i') }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
