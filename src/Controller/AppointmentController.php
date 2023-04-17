@@ -142,6 +142,22 @@ public function edit(Request $request, Appointment $appointment, EntityManagerIn
             $appointments = [];
         }
 
+        // Ajouter la condition pour filtrer selon le statut confirmé ou non confirmé
+        if (isset($formData['status'])) {
+            if ($formData['status'] === true) {
+                $appointments = array_filter($appointments, function ($appointment) {
+                    $appointment->setStatus(true);
+                    return $appointment->isStatus();
+                });
+            } elseif ($formData['status'] === false) {
+                $appointments = array_filter($appointments, function ($appointment) {
+                    $appointment->setStatus(false);
+                    return !$appointment->isStatus();
+                });
+            }
+        }
+        
+
         return $this->render('appointment/search.html.twig', [
             'form' => $form->createView(),
             'appointments' => $appointments,

@@ -59,6 +59,16 @@ class AppointmentRepository extends ServiceEntityRepository
             $qb->andWhere('a.hour = :appointmentTime')
                 ->setParameter('appointmentTime', $criteria['appointmentTime']);
         }
+        if (isset($criteria['status'])) {
+            if ($criteria['status'] === null) {
+                $qb->andWhere('a.status IS NULL');
+            } elseif ($criteria['status'] === true) {
+                $qb->andWhere('a.status = true');
+            } elseif ($criteria['status'] === false) {
+                $qb->andWhere('a.status = false');
+            }
+        }
+    
 
         return $qb->getQuery()->getResult();
     }
