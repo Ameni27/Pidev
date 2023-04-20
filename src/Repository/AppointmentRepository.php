@@ -73,6 +73,54 @@ class AppointmentRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    public function countAppointmentsByMonth()
+{
+    $qb = $this->createQueryBuilder('a');
+    $qb->select("SUBSTRING(a.dateap, 6, 2) as month, COUNT(a.idap) as count")
+       ->groupBy("month")
+       ->orderBy("month", "ASC");
+    $query = $qb->getQuery();
+    $results = $query->getResult();
+
+    $appointmentsByMonth = [];
+    foreach ($results as $result) {
+        $appointmentsByMonth[$result['month']] = $result['count'];
+    }
+    
+    return $appointmentsByMonth;
+}
+public function countAppointmentsByMedecin()
+{
+    $results = $this->createQueryBuilder('a')
+        ->select('u.firstname as medecin', 'count(a.idap) as nb_appointments')
+        ->join('a.idmedecin', 'u')
+        ->groupBy('medecin')
+        ->getQuery()
+        ->getResult();
+
+    $data = [];
+    foreach ($results as $result) {
+        $data[] = [
+            'name' => $result['medecin'],
+            'y' => (int) $result['nb_appointments'],
+        ];
+    }
+
+    return $data;
+}
+
+public function countAppointmentsByStatus()
+{
+    return $this->createQueryBuilder('a')
+                ->select('COUNT(a.idap) as total', 'SUM(CASE WHEN a.status = 0 THEN 1 ELSE 0 END) as confirmed', 'SUM(CASE WHEN a.status = 1 THEN 1 ELSE 0 END) as waiting')
+                ->getQuery()
+                ->getSingleResult();
+}
+
+
+
+
+
 
 
 //    /**

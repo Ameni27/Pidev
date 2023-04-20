@@ -32,9 +32,12 @@ class AppointmentSearchType extends AbstractType
         ->add('appointmentDate', null, [
             'required' => false,
         ])
+        ->add('appointmentTime', null, [
+            'required' => false,
+        ])
 
             
-            ->add('appointmentTime')
+            
             ->add('search', SubmitType::class);
 
             

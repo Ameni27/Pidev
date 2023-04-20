@@ -18,6 +18,8 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use App\Form\AppointmentSearchType; // Ajout de cette ligne
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 
 
 class AppointmentController extends AbstractController
@@ -111,14 +113,14 @@ public function edit(Request $request, Appointment $appointment, EntityManagerIn
         return $this->redirectToRoute('app_appointment');
     }
 
-    #[Route('/appointments/{id}/confirm', name: 'appointments_confirm')]
-    public function confirm(Request $request, Appointment $appointment, EntityManagerInterface $entityManager): Response
-    {
-        $appointment->setStatus(true);
-        $entityManager->flush();
+   // #[Route('/appointments/{id}/confirm', name: 'appointments_confirm')]
+    //public function confirm(Request $request, Appointment $appointment, EntityManagerInterface $entityManager): Response
+    //{
+      //  $appointment->setStatus(true);
+        //$entityManager->flush();
     
-          return $this->redirectToRoute('app_appointment');
-    }
+          //return $this->redirectToRoute('app_appointment');
+    //}
 
     
     #[Route('/Appointments/search', name: 'appointments_search')]
@@ -163,6 +165,41 @@ public function edit(Request $request, Appointment $appointment, EntityManagerIn
             'appointments' => $appointments,
         ]);
     }
+    #[Route('/appointments/{id}/confirm', name: 'appointments_confirm')]
+public function confirm(Request $request, Appointment $appointment, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
+{
+    $appointment->setStatus(true);
+    $entityManager->flush();
+
+    
+    $email = (new Email())
+        ->from('belhadj.ameni@esprit.tn')
+        ->to('amenibelhadj556@gmail.com')
+        ->subject('Appointment Confirmed')
+        ->text('Your appointment has been confirmed.');
+
+    $mailer->send($email);
+
+    return $this->redirectToRoute('app_appointment');
+}
+#[Route('/stat', name: 'stat')]
+    public function stat(AppointmentRepository $appointmentRepository): Response
+    {
+        $appointmentsByMonth = $appointmentRepository->countAppointmentsByMonth();
+        $appointmentsByMedecin = $appointmentRepository->countAppointmentsByMedecin();
+        $appointmentStatus = $appointmentRepository->countAppointmentsByStatus();
+    
+        return $this->render('appointment/calendar.html.twig', [
+            'appointmentsByMonth' => $appointmentsByMonth,
+            'appointmentsByMedecin' => $appointmentsByMedecin,
+            'totalAppointments' => $appointmentStatus['total'],
+            'confirmedAppointments' => $appointmentStatus['confirmed'],
+            'waitingAppointments' => $appointmentStatus['waiting'],
+            
+        ]);
+    }
+
+
     
     
 }

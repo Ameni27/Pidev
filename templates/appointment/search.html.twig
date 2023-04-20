@@ -1,33 +1,84 @@
 {% extends 'back.html.twig' %}
 
 {% block body %}
-    <h1>Recherche de rendez-vous</h1>
+<link href="{{ asset('admin/img/favicon.ico') }}" rel="icon">
+  <div class="container">
+    <h1 class="text-center mt-4 mb-5">Recherche de rendez-vous</h1>
 
-    {{ form_start(form) }}
-        {{ form_row(form.patientName) }}
-        {{ form_row(form.appointmentDate) }}
-        {{ form_row(form.appointmentTime) }}
-        {{ form_row(form.search) }}
-    {{ form_end(form) }}
+    <div class="row justify-content-right">
+      <div class="col-lg-8">
+        {{ form_start(form, {'attr': {'class': 'form'}}) }}
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="form-group">
+                {{ form_row(form.patientName, {'attr': {'class': 'form-control', 'placeholder': 'Nom du patient'}}) }}
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="form-group">
+                {{ form_row(form.appointmentDate, {'attr': {'class': 'form-control', 'placeholder': 'Date du rendez-vous'}}) }}
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="form-group">
+                {{ form_row(form.appointmentTime, {'attr': {'class': 'form-control', 'placeholder': 'Heure du rendez-vous'}}) }}
+              </div>
+            </div>
+          </div>
+          <div class="form-group text-center">
+            {{ form_row(form.search, {'attr': {'class': 'btn btn-primary'}}) }}
+          </div>
+        {{ form_end(form) }}
+      </div>
+    </div>
 
     {% if appointments is not empty %}
-        <table>
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <table class="table table-striped table-bordered mt-5">
             <thead>
-                <tr>
-                    <th>Nom du patient</th>
-                    <th>Date du rendez-vous</th>
-                    <th>Heure du rendez-vous</th>
-                </tr>
+              <tr>
+                <th scope="col">Nom du patient</th>
+                <th scope="col">Date du rendez-vous</th>
+                <th scope="col">Heure du rendez-vous</th>
+              </tr>
             </thead>
             <tbody>
-                {% for appointment in appointments %}
-                    <tr>
-                        <td>{{ appointment.getPatientName() }}</td>
-                        <td>{{ appointment.getDateap()|date('d/m/Y') }}</td>
-                        <td>{{ appointment.getHour()|date('H:i') }}</td>
-                    </tr>
-                {% endfor %}
+              {% for appointment in appointments %}
+                <tr>
+                  <td>{{ appointment.getPatientName() }}</td>
+                  <td>{{ appointment.getDateap()|date('d/m/Y') }}</td>
+                  <td>{{ appointment.getHour()|date('H:i') }}</td>
+                </tr>
+              {% endfor %}
             </tbody>
-        </table>
+          </table>
+        </div>
+      </div>
     {% endif %}
+  </div>
+
+  <style>
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .form {
+      
+      background-color: #f2f2f2;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+      width:1000px;
+     
+    }
+
+    .table {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+  </style>
 {% endblock %}
