@@ -1,0 +1,64 @@
+{% extends 'back.html.twig' %}
+
+{% block body %}
+    <!-- Inclure jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Créer un formulaire avec un champ de recherche -->
+    <form id="searchForm">
+        <input type="text" id="searchInput" name="searchInput">
+        <button type="submit">Rechercher</button>
+    </form>
+
+    <!-- Afficher les résultats de la recherche sans recharger la page -->
+    <div id="searchResults"></div>
+
+    <script>
+        $(document).ready(function() {
+            // Intercepter le formulaire de recherche lorsqu'il est soumis
+            $('#searchForm').submit(function(event) {
+                event.preventDefault(); // Empêcher le formulaire de recharger la page
+
+                // Récupérer la valeur du champ de recherche
+                var searchValue = $('#searchInput').val();
+
+                // Envoyer une requête AJAX pour récupérer les résultats de la recherche
+                $.ajax({
+                    url: '/search',
+                    method: 'GET',
+                    data: {q: searchValue},
+                    success: function(response) {
+                        // Afficher les résultats de la recherche dans la div #searchResults
+                        var results = JSON.parse(response);
+                        var html = '<ul>';
+                        for (var i = 0; i < results.length; i++) {
+                            html += '<li><strong>Nom:</strong> ' + results[i].nom + ', <strong>Adresse:</strong> ' + results[i].adresse + '</li>';
+                        }
+                        html += '</ul>';
+                        $('#searchResults').html(html);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <style>
+        /* Style pour le design des résultats de recherche */
+        #searchResults {
+            margin-top: 20px;
+        }
+        #searchResults ul {
+            list-style: none;
+            padding: 0;
+        }
+        #searchResults li {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f2f2f2;
+            border: 1px solid #ccc;
+        }
+        #searchResults li strong {
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}

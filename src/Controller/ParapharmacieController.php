@@ -5,6 +5,8 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 
 
 use Symfony\Component\HttpFoundation\Request;
@@ -13,6 +15,9 @@ use App\Entity\Appointment;
 use App\Entity\User;
 use App\Form\ParapharmacieType; // Ajout de cette ligne
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+
 use App\Repository\AppointmentRepository;
 
 
@@ -107,6 +112,64 @@ public function delete(Request $request,Parapharmacie $parapharmacie,EntityManag
 
     return $this->redirectToRoute('app_parapharmacie');
 }
+
+
+#[Route('/search-parapharmacies', name: 'search_parapharmacies')]
+public function search(Request $request, EntityManagerInterface $entityManager): JsonResponse
+{
+    $searchTerm = $request->query->get('search');
+    $parapharmacieRepository = $entityManager->getRepository(Parapharmacie::class);
+    $parapharmacies = [];
+    if ($searchTerm !== null) {
+        $parapharmacies = $parapharmacieRepository->findBySearchTerm($searchTerm);
+    }
+
+    $results = [];
+    foreach ($parapharmacies as $parapharmacie) {
+        $results[] = [
+            'nom' => $parapharmacie->getNom(),
+            'adresse' => $parapharmacie->getAdresse(),
+        ];
+    }
+
+    return $this->json($results);
+}
+
+/**
+ * @Route("/search", name="search")
+ */
+public function searchResults(Request $request, NormalizerInterface $normalizer, EntityManagerInterface $entityManager): Response
+{
+    $searchTerm = $request->query->get('q');
+    $parapharmacies = [];
+    if ($searchTerm !== null) {
+        $parapharmacieRepository = $entityManager->getRepository(Parapharmacie::class);
+        $parapharmacies = $parapharmacieRepository->findBySearchTerm($searchTerm);
+    }
+
+    $results = [];
+    foreach ($parapharmacies as $parapharmacie) {
+        $results[] = [
+            'nom' => $parapharmacie->getNom(),
+            'adresse' => $parapharmacie->getAdresse(),
+        ];
+    }
+
+    $jsonContent = $normalizer->normalize($results, 'json');
+    $retour = json_encode($jsonContent);
+
+    return new Response($retour);
+}
+
+/**
+ * @Route("/search-results", name="search_results")
+ */
+public function searchResultsPage(): Response
+{
+    return $this->render('parapharmacie/search_results.html.twig');
+}
+
+
 
 
 

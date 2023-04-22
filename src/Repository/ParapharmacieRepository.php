@@ -38,6 +38,16 @@ class ParapharmacieRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+    public function findBySearchTerm(string $searchTerm): array
+{
+    return $this->createQueryBuilder('p')
+        ->where('p.nom LIKE :searchTerm OR p.adresse LIKE :searchTerm')
+        ->setParameter('searchTerm', '%'.$searchTerm.'%')
+        ->getQuery()
+        ->getResult();
+}
+
+
 
 //    /**
 //     * @return Parapharmacie[] Returns an array of Parapharmacie objects
