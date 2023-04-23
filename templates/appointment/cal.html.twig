@@ -1,14 +1,90 @@
 {% extends 'back.html.twig' %}
 
-{% block body %}
+{% block stylesheets %}
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css' rel='stylesheet' />
+    <link href="{{ asset('admin/img/favicon.ico') }}" rel="icon">
+    <link href="{{ asset('admin/img/favicon.ico') }}" rel="icon">
 
+<!-- Google Web Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Icon Font Stylesheet -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- Libraries Stylesheet -->
+<link href="{{ asset('admin/lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
+<link href="{{ asset('admin/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css') }}" rel="stylesheet" />
+
+<!-- Customized Bootstrap Stylesheet -->
+<link href="{{ asset('admin/css/bootstrap.min.css') }}" rel="stylesheet">
+
+<!-- Template Stylesheet -->
+<link href="{{ asset('admin/css/style.css') }}" rel="stylesheet">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-e6UQlgGnJi7HXBp9ZsV7cKqxWqw89VbJL+yMYtnyV7Lxztfem8jlVJfgQFifgZqbg3E2Ilj+oWtLq3YfwUnz1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+            <link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+            <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
+         
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  
+
+            <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js'></script>
+    <script>
+        $(document).ready(function() {
+            $('#calendar').fullCalendar({
+                // Options for the calendar
+                events: [
+                    {% for appointment in appointments %}
+                        {
+                            title: "{{ appointment.idpatient.firstname }} {{ appointment.idpatient.lastname }}",
+                            start: "{{ appointment.dateap|date('Y-m-d') }}T{{ appointment.hour }}:00",
+                            {% if appointment.status == true %}
+                                color: '#7FFF00'
+                            {% else %}
+                                color: '#FF6347'
+                            {% endif %}
+                        },
+                    {% endfor %}
+                ],
+            });
+        });
+    </script>
+    <script src="{{ asset('admin/js/jquery-3.4.1.min.js') }}"></script>
+    <script src="{{ asset('admin/lib/bootstrap-5.0.0/dist/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('admin/lib/chart/chart.min.js') }}"></script>
+    <script src="{{ asset('node_modules/chart.js/dist/chart.min.js') }}"></script> <!--hetha-->
+    <script src="{{ asset('admin/lib/easing/easing.min.js') }}"></script>
+    <script src="{{ asset('admin/lib/waypoints/waypoints.min.js') }}"></script>
+    <script src="{{ asset('admin/lib/owlcarousel/owl.carousel.min.js') }}"></script>
+    <script src="{{ asset('admin/lib/tempusdominus/js/moment.min.js') }}"></script>
+    <script src="{{ asset('admin/lib/tempusdominus/js/moment-timezone.min.js') }}"></script>
+    <script src="{{ asset('admin/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js') }}"></script>
+
+    <!-- Template Javascript -->
+    <script src="{{ asset('admin/js/main.js') }}"></script>
+{% endblock %}
+
+{% block body %}
 
 <!-- Sale & Revenue Start -->
             <div class="container-fluid pt-4 px-4">
                 <div class="row g-4">
                     <div class="col-sm-6 col-xl-3">
                         <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
-                            <i class="fa fa-duotone fa-calendar-check fa-3x text-primary"></i>
+                            <i class="fa fa-duotone fa-calendar-check fa-4x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">Total Rdv</p>
                                 <h6 class="mb-0">{{ totalAppointments }}</h6>
@@ -17,7 +93,7 @@
                     </div>
                     <div class="col-sm-6 col-xl-3">
                         <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
-                            <i class="fa fa-chart-bar fa-3x text-primary"></i>
+                            <i class="fa fa-chart-bar fa-4x text-danger"></i>
                             <div class="ms-3">
                                 <p class="mb-2"> RDV confirmé </p>
                                 <h6 class="mb-0">{{ waitingAppointments }}</h6>
@@ -26,7 +102,7 @@
                     </div>
                     <div class="col-sm-6 col-xl-3">
                         <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
-                            <i class="fa fa-chart-area fa-3x text-primary"></i>
+                            <i class="fa fa-chart-area fa-4x text-success"></i>
                             <div class="ms-3">
                                 <p class="mb-2"> en attente</p>
                                 <h6 class="mb-0">{{ confirmedAppointments }}</h6>
@@ -35,7 +111,7 @@
                     </div>
                     <div class="col-sm-6 col-xl-3">
                         <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
-                            <i class="fa fa-chart-pie fa-3x text-primary"></i>
+                            <i class="fa fa-chart-pie fa-4x text-warning"></i>
                             <div class="ms-3">
                                 <p class="mb-2">Total Revenue</p>
                                 <h6 class="mb-0">$1234</h6>
@@ -152,4 +228,5 @@
 
     </script>
     
+    <div id="calendar"></div>
 {% endblock %}

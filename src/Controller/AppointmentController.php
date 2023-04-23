@@ -29,8 +29,14 @@ class AppointmentController extends AbstractController
     {
         $appointmentRepository = $entityManager->getRepository(Appointment::class);
         $appointments = $appointmentRepository->findAll();
+        $appointmentsByMonth = $appointmentRepository->countAppointmentsByMonth();
+        $appointmentsByMedecin = $appointmentRepository->countAppointmentsByMedecin();
+        $appointmentStatus = $appointmentRepository->countAppointmentsByStatus();
         return $this->render('appointment/index.html.twig', [
-            'controller_name' => 'AppointmentController','a' => $appointments
+            'controller_name' => 'AppointmentController','a' => $appointments,
+            'totalAppointments' => $appointmentStatus['total'],
+            'confirmedAppointments' => $appointmentStatus['confirmed'],
+            'waitingAppointments' => $appointmentStatus['waiting'],
         ]);
     }
 
@@ -199,7 +205,24 @@ public function confirm(Request $request, Appointment $appointment, EntityManage
         ]);
     }
 
-
+    #[Route('/cal', name: 'cal')]
+    public function cal(AppointmentRepository $appointmentRepository): Response
+    {
+        $appointments = $appointmentRepository->findAll();
+        $appointmentsByMonth = $appointmentRepository->countAppointmentsByMonth();
+        $appointmentsByMedecin = $appointmentRepository->countAppointmentsByMedecin();
+        $appointmentStatus = $appointmentRepository->countAppointmentsByStatus();
+        return $this->render('appointment/cal.html.twig', [
+            'controller_name' => 'AppointmentController',
+            'appointments' => $appointments,
+            'appointmentsByMonth' => $appointmentsByMonth,
+            'appointmentsByMedecin' => $appointmentsByMedecin,
+            'totalAppointments' => $appointmentStatus['total'],
+            'confirmedAppointments' => $appointmentStatus['confirmed'],
+            'waitingAppointments' => $appointmentStatus['waiting'],
+        ]);
+    }
+    
     
     
 }
