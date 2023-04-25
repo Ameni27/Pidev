@@ -46,7 +46,8 @@ class AppointmentRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('a');
 
         if (isset($criteria['patientName'])) {
-            $qb->andWhere('a.patientName LIKE :patientName')
+            $qb->leftJoin('a.idpatient', 'p')
+                ->andWhere('CONCAT(p.firstname, \' \', p.lastname) LIKE :patientName')
                 ->setParameter('patientName', '%' . $criteria['patientName'] . '%');
         }
 

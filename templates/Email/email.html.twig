@@ -1,22 +1,4 @@
-<?php
-
-// Inclure l'autoloader de Composer
-require_once 'vendor/autoload.php';
-
-// Créer le transporteur SMTP
-$transport = new \Symfony\Component\Mailer\Transport\Smtp\SmtpTransport('smtp.gmail.com', 587, 'tls');
-$transport->setUsername('belhadj.ameni@esprit.tn');
-$transport->setPassword('qpvxewekwtfyecrj');
-
-// Créer le mailer
-$mailer = new \Symfony\Component\Mailer\Mailer($transport);
-
-// Créer le message
-$email = (new \Symfony\Component\Mime\Email())
-    ->from('belhadj.ameni@esprit.tn')
-    ->to('amenibelhadj556@gmail.com')
-    ->subject('Confirmation du rendez-vous')
-    ->html('<html>
+<html>
     <head>
       <style>
         /* Définir le style CSS pour le corps du message */
@@ -69,7 +51,4 @@ $email = (new \Symfony\Component\Mime\Email())
         <p>© 2023 Nom du cabinet médical</p>
       </footer>
     </body>
-  </html>');
-
-// Envoyer le message
-$mailer->send($email);
+  </html>

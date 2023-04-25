@@ -18,9 +18,9 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use App\Form\AppointmentSearchType; // Ajout de cette ligne
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+
+
+use App\Services\MailService;
 
 
 class AppointmentController extends AbstractController
@@ -176,16 +176,30 @@ public function edit(Request $request, Appointment $appointment, EntityManagerIn
         ]);
     }
     #[Route('/appointments/{id}/confirm', name: 'appointments_confirm')]
-public function confirm(Request $request, Appointment $appointment, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
+public function confirm(Request $request,MailService $mailer, Appointment $appointment, EntityManagerInterface $entityManager): Response
 {
     $appointment->setStatus(true);
     $entityManager->flush();
-     $email = (new Email())
-    ->from('belhadj.ameni@esprit.tn')
-    ->to('amenibelhadj556@gmail.com')
-    ->subject('Confirmation du rendez-vous')
-    ->html('<html>...</html>');
-    $mailer->send($email);
+    $context=[
+        
+    ];
+   
+    $mailer->sendEmail(
+       "amenibelhadj556@gmail.com",'Email/email.html.twig',"Mot de passe oubliée ?",$context,
+        
+            
+    
+        
+        );
+        
+
+    
+
+    
+    
+
+   
+
     return $this->redirectToRoute('app_appointment');
 }
 #[Route('/stat', name: 'stat')]
