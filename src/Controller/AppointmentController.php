@@ -20,6 +20,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use App\Form\AppointmentSearchType; // Ajout de cette ligne
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 
 class AppointmentController extends AbstractController
@@ -74,6 +75,7 @@ public function new(Request $request, EntityManagerInterface $entityManager, int
     if ($form->isSubmitted() && $form->isValid()) {
         $entityManager->persist($appointment);
         $entityManager->flush();
+        $this->addFlash('success', 'Le rendez-vous a été ajouté avec succès.');
 
         return $this->redirectToRoute('appointments_patient', ['id' => 2]);
     }
@@ -99,6 +101,7 @@ public function edit(Request $request, Appointment $appointment, EntityManagerIn
 
     if ($form->isSubmitted() && $form->isValid()) {
         $entityManager->flush();
+        $this->addFlash('success', 'Le rendez-vous a été modifié avec succès.');
 
         return $this->redirectToRoute('app_appointment');
     }
@@ -115,6 +118,7 @@ public function edit(Request $request, Appointment $appointment, EntityManagerIn
     {
         $entityManager->remove($appointment);
         $entityManager->flush();
+        $this->addFlash('success', 'Le rendez-vous a été supprimé avec succès.');
 
         return $this->redirectToRoute('app_appointment');
     }
@@ -176,16 +180,12 @@ public function confirm(Request $request, Appointment $appointment, EntityManage
 {
     $appointment->setStatus(true);
     $entityManager->flush();
-
-    
-    $email = (new Email())
-        ->from('belhadj.ameni@esprit.tn')
-        ->to('amenibelhadj556@gmail.com')
-        ->subject('Appointment Confirmed')
-        ->text('Your appointment has been confirmed.');
-
+     $email = (new Email())
+    ->from('belhadj.ameni@esprit.tn')
+    ->to('amenibelhadj556@gmail.com')
+    ->subject('Confirmation du rendez-vous')
+    ->html('<html>...</html>');
     $mailer->send($email);
-
     return $this->redirectToRoute('app_appointment');
 }
 #[Route('/stat', name: 'stat')]

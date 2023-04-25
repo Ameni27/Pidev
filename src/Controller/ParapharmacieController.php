@@ -70,6 +70,7 @@ class ParapharmacieController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($parapharmacie);
             $entityManager->flush();
+            $this->addFlash('success', 'Parapharmacie ajouté avec succès.');
     
             return $this->redirectToRoute('app_parapharmacie');
         }
@@ -95,6 +96,7 @@ public function edit(Request $request, Parapharmacie $parapharmacie, EntityManag
 
     if ($form->isSubmitted() && $form->isValid()) {
         $entityManager->flush();
+        $this->addFlash('success', 'Parapharmacie modifiée avec succès avec succès.');
 
         return $this->redirectToRoute('app_parapharmacie');
     }
@@ -109,6 +111,7 @@ public function delete(Request $request,Parapharmacie $parapharmacie,EntityManag
 {
     $entityManager->remove($parapharmacie);
     $entityManager->flush();
+    $this->addFlash('success', 'La parapharmacie a été supprimé avec succès.');
 
     return $this->redirectToRoute('app_parapharmacie');
 }
