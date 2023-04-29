@@ -18,6 +18,11 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use App\Form\AppointmentSearchType; // Ajout de cette ligne
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+
+
 
 
 use App\Services\MailService;
@@ -123,14 +128,7 @@ public function edit(Request $request, Appointment $appointment, EntityManagerIn
         return $this->redirectToRoute('app_appointment');
     }
 
-   // #[Route('/appointments/{id}/confirm', name: 'appointments_confirm')]
-    //public function confirm(Request $request, Appointment $appointment, EntityManagerInterface $entityManager): Response
-    //{
-      //  $appointment->setStatus(true);
-        //$entityManager->flush();
-    
-          //return $this->redirectToRoute('app_appointment');
-    //}
+   
 
     
     #[Route('/Appointments/search', name: 'appointments_search')]
@@ -185,7 +183,7 @@ public function confirm(Request $request,MailService $mailer, Appointment $appoi
     ];
    
     $mailer->sendEmail(
-       "amenibelhadj556@gmail.com",'Email/email.html.twig',"Mot de passe oubliée ?",$context,
+       "amenibelhadj556@gmail.com",'Email/email.html.twig',"Confirmation du RDV",$context,
         
             
     
@@ -236,7 +234,122 @@ public function confirm(Request $request,MailService $mailer, Appointment $appoi
             'waitingAppointments' => $appointmentStatus['waiting'],
         ]);
     }
+
+    /**=============================================partie json =============================================================*/
+
+
+
+
+
+
+  
+  /**  public function indexJSON(EntityManagerInterface $entityManager, NormalizerInterface $normalizer): Response
+    {
+        $appointmentRepository = $entityManager->getRepository(Appointment::class);
+        $appointments = $appointmentRepository->findAll();
+
+        $jsonContent = $normalizer->normalize($appointments, 'json', ['groups' => 'appointments']);
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/json');
+        $response->setContent(json_encode($jsonContent));
+
+        return $response;
+    }*/ 
     
+    #[Route('/AppointmentJSON', name: 'app_appointmentJSON')]
+    public function getAppointmentsJson(AppointmentRepository $appointmentRepository, SerializerInterface $serializer)
+{
+    $appointments = $appointmentRepository->findAll();
+    $jsonContent = $serializer->serialize($appointments, 'json');
+
+    return new JsonResponse($jsonContent, 200, [], true);
+}
+
+
+
+#[Route("deleteAppointmentJSON/{id}", name: "deleteAppointmentJSON")]
+public function deleteAppointmentJSON($id, NormalizerInterface $normalizer)
+{
+    $entityManager = $this->getDoctrine()->getManager();
+    $appointment = $entityManager->getRepository(Appointment::class)->find($id);
+
+    if (!$appointment) {
+        throw $this->createNotFoundException('Aucun rendez-vous trouvé pour l\'id ' . $id);
+    }
+
+    $entityManager->remove($appointment);
+    $entityManager->flush();
+
+    $jsonContent = $normalizer->normalize($appointment, 'json', ['groups' => 'appointments']);
+    $response = new Response();
+    $response->headers->set('Content-Type', 'application/json');
+    $response->setContent(json_encode($jsonContent));
+
+    return $response;
+}
+#[Route('/appointments/newJSON/{idmedecin}/{idpatient}', name: 'appointments_new2')]
+public function newJSON(Request $request, EntityManagerInterface $entityManager, int $idmedecin, int $idpatient, NormalizerInterface $Normalizer): Response
+{   
+    $medecin = $entityManager->getRepository(User::class)->find($idmedecin);
+    $patient = $entityManager->getRepository(User::class)->find($idpatient);
+
+    $appointment = new Appointment();
+    $appointment->setIdmedecin($medecin);
+    $appointment->setIdpatient($patient);
+
+    // récupération des données de la requête
+    $data = json_decode($request->getContent(), true);
+    if(isset($data['dateap'])) {
+        $appointment->setDateap(new \DateTime($data['dateap']));
+    }
+    if(isset($data['hour'])) {
+        $appointment->setHour($data['hour']);
+    }
+    $entityManager->persist($appointment);
+    $entityManager->flush();
+
+    $jsonContent = $Normalizer->normalize($appointment, 'json', ['groups' => 'appointments']);
+
+    return new Response(json_encode($jsonContent));
+}
+
+#[Route('/appointments/{id}/editJSON', name: 'appointments_edit_json', methods: ['PUT'])]
+public function editJSON(Request $request, Appointment $appointment, EntityManagerInterface $entityManager, NormalizerInterface $normalizer): Response
+{
+    // récupération des données de la requête
+    $data = json_decode($request->getContent(), true);
+
+    if(isset($data['dateap'])) {
+        $appointment->setDateap(new \DateTime($data['dateap']));
+    }
+    if(isset($data['hour'])) {
+        $appointment->setHour($data['hour']);
+    }
+
+    $entityManager->flush();
+
+    $jsonContent = $normalizer->normalize($appointment, 'json', ['groups' => 'appointments']);
+    $response = new Response();
+    $response->headers->set('Content-Type', 'application/json');
+    $response->setContent(json_encode($jsonContent));
+
+    return $response;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     
 }

@@ -18,6 +18,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
+
+
 use App\Repository\AppointmentRepository;
 
 
@@ -170,6 +172,95 @@ public function searchResults(Request $request, NormalizerInterface $normalizer,
 public function searchResultsPage(): Response
 {
     return $this->render('parapharmacie/search_results.html.twig');
+}
+
+
+/**==============================json================================ */
+#[Route('/parapharmacieJSON', name: 'app_parapharmacieJSON')]
+public function indexJSON(EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
+{
+    $parapharmacieRepository = $entityManager->getRepository(Parapharmacie::class);
+    $parapharmacies = $parapharmacieRepository->findAll();
+
+    if (empty($parapharmacies)) {
+        $error = ['error' => 'No parapharmacies found'];
+        $json = $serializer->serialize($error, 'json');
+    } else {
+        $json = $serializer->serialize($parapharmacies, 'json');
+    }
+
+    return new JsonResponse($json, 200, [
+        'Content-Type' => 'application/json'
+    ], true);
+}
+
+
+
+
+
+#[Route('/addParapharmacieJSON/new', name: 'addParapharmacieJSON')]
+    public function addParapharmacieJSON(Request $request, NormalizerInterface $normalizer)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $parapharmacie = new Parapharmacie();
+        $parapharmacie->setNom($request->get('nom'));
+        $parapharmacie->setAdresse($request->get('adresse'));
+        $parapharmacie->setPhone($request->get('phone'));
+    
+        $entityManager->persist($parapharmacie);
+        $entityManager->flush();
+    
+        $jsonContent = $normalizer->normalize($parapharmacie, 'json', ['groups' => 'parapharmacies']);
+        return new Response(json_encode($jsonContent));
+    }
+
+
+    #[Route('/editParapharmacieJSON/{id}', name: 'editParapharmacieJSON')]
+    public function editParapharmacieJSON(Request $request, EntityManagerInterface $entityManager, NormalizerInterface $normalizer, $id): Response
+    {
+        $parapharmacie = $entityManager->getRepository(Parapharmacie::class)->find($id);
+    
+        if (!$parapharmacie) {
+            return new Response("La parapharmacie avec l'ID $id n'a pas été trouvée.", Response::HTTP_NOT_FOUND);
+        }
+    
+        $nom = $request->get('nom');
+        $adresse = $request->get('adresse');
+        $phone = $request->get('phone');
+    
+        if ($nom !== null) {
+            $parapharmacie->setNom($nom);
+        }
+    
+        if ($adresse !== null) {
+            $parapharmacie->setAdresse($adresse);
+        }
+    
+        if ($phone !== null) {
+            $parapharmacie->setPhone($phone);
+        }
+    
+        $entityManager->flush();
+    
+        $jsonContent = $normalizer->normalize($parapharmacie, 'json', ['groups' => 'parapharmacies']);
+        return new Response("Parapharmacie updated successfully " . json_encode($jsonContent));
+    }
+#[Route("deleteParapharmacieJSON/{id}", name: "deleteParapharmacieJSON")]
+public function deleteParapharmacieJSON(Request $request, $id, EntityManagerInterface $entityManager, NormalizerInterface $Normalizer): Response
+{
+    $parapharmacie = $entityManager->getRepository(Parapharmacie::class)->find($id);
+
+    if (!$parapharmacie) {
+        return new Response("Parapharmacie not found for id $id", Response::HTTP_NOT_FOUND);
+    }
+
+    $entityManager = $this->getDoctrine()->getManager();
+    $entityManager->remove($parapharmacie);
+    $entityManager->flush();
+
+    $jsonContent = $Normalizer->normalize($parapharmacie, 'json', ['groups' => 'parapharmacies']);
+
+    return new Response("Parapharmacie deleted successfully " . json_encode($jsonContent));
 }
 
 
