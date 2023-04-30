@@ -57,6 +57,18 @@ class AppointmentController extends AbstractController
             'appointments' => $appointments
         ]);
     }
+
+
+    
+    #[Route('/appointments/doctor/{id}', name: 'appointments_doctor')]
+public function appointmentsByDoctor(AppointmentRepository $appointmentRepository, int $id): Response
+{
+    $appointments = $appointmentRepository->findBy(['idmedecin' => $id]);
+
+    return $this->render('appointment/doctor.html.twig', [
+        'appointments' => $appointments
+    ]);
+}
     
     
 

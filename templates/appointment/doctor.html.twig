@@ -1,0 +1,63 @@
+{% extends 'back.html.twig' %}
+
+{% block title %}Hello ParapharmacieController!{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Rendez-vous par médecin</h1>
+                <hr>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Heure</th>
+                            <th>ID Patient</th>
+                            <th>ID Médecin</th>
+                            <th>État</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in appointments %}
+                            <tr>
+                                <td>{{ appointment.idap }}</td>
+                                <td>{{ appointment.dateap ? appointment.dateap|date('Y-m-d') : '' }}</td>
+                                <td>{{ appointment.hour|date('H:i') }}</td>
+                                <td>{{ appointment.medecinName }}</td>
+                                <td>{{ appointment.getPatientName() }}</td>
+                                <td>
+                                    {% if appointment.status == 1 %}
+                                        <span class="badge badge-success">Confirmé</span>
+                                    {% else %}
+                                        <span class="badge badge-warning">En attente</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                {% if appointment.status == 0 %}
+                <a href="{{ url('appointments_confirm', {'id': appointment.idap}) }}" class="btn btn-success" title="Confirmer le rendez-vous">
+                    <i class="bi bi-check"></i>
+                  </a>
+                {% endif %}
+                <div class="btn-group">
+                  <a href="{{ path('appointments_show', {'id': appointment.idap})}}" class="btn btn-primary" title="Voir">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                  <a href="{{ path('appointments_edit', {'id': appointment.idap})}}" class="btn btn-info" title="Modifier">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <a href="{{ path('appointments_delete', {'id': appointment.idap})}}" class="btn btn-danger" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce rendez-vous ?')">
+                    <i class="bi bi-trash"></i>
+                  </a>
+                </div>
+              </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
